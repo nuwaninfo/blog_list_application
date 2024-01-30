@@ -73,10 +73,27 @@ describe('totsl likes', () => {
       likes: 2,
       __v: 0,
     },
+    {
+      _id: '65b375e019e3f5ddef5e9b7a',
+      title: 'Todays Best Node.js Blogs',
+      author: '@monicalent',
+      url: 'https://bloggingfordevs.com/node-blogs/',
+      likes: 2,
+      __v: 0,
+    },
   ]
 
   test('when list has multiple blogs, equals the likes of that', () => {
     const result = listHelper.totalLikes(blogs)
-    expect(result).toBe(36)
+    expect(result).toBe(38)
+  })
+
+  test('when list has multiple blogs, equlas the blog which has most number of likes', () => {
+    const result = listHelper.favoriteBlog(blogs)
+    expect(result).toEqual({
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+    })
   })
 })

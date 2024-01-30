@@ -10,7 +10,16 @@ const totalLikes = (blogs) => {
   return sum
 }
 
+const favoriteBlog = (blogs) => {
+  const blogObj = blogs.reduce((maxObj, currObj) => {
+    return maxObj.likes > currObj.likes ? maxObj : currObj
+  })
+  const { _id, url, __v, ...newObj } = blogObj
+  return newObj
+}
+
 module.exports = {
   dummy,
   totalLikes,
+  favoriteBlog,
 }
