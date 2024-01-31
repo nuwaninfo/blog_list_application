@@ -96,4 +96,12 @@ describe('totsl likes', () => {
       likes: 12,
     })
   })
+
+  test('when list has multiple blogs, equlas most blogs by author', () => {
+    const result = listHelper.mostBlogs(blogs)
+    expect(result).toEqual({
+      author: 'Robert C. Martin',
+      blogs: 3,
+    })
+  })
 })

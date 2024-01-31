@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const dummy = (blogs) => {
   return 1
 }
@@ -18,8 +20,24 @@ const favoriteBlog = (blogs) => {
   return newObj
 }
 
+const mostBlogs = (blogs) => {
+  const blogCount = _.countBy(blogs, 'author')
+  let maxProperty
+  let maxValue = -Infinity
+
+  for (const [prop, value] of Object.entries(blogCount)) {
+    if (value > maxValue) {
+      maxProperty = prop
+      maxValue = value
+    }
+  }
+
+  return { author: maxProperty, blogs: maxValue }
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 }
