@@ -35,9 +35,29 @@ const mostBlogs = (blogs) => {
   return { author: maxProperty, blogs: maxValue }
 }
 
+const mostLikes = (blogs) => {
+  const mostLikesObj = blogs.reduce((acc, curr) => {
+    acc[curr.author] = (acc[curr.author] || 0) + curr.likes
+    return acc
+  }, {})
+
+  let maxProperty
+  let maxValue = -Infinity
+
+  for (const [prop, value] of Object.entries(mostLikesObj)) {
+    if (value > maxValue) {
+      maxProperty = prop
+      maxValue = value
+    }
+  }
+
+  return { author: maxProperty, likes: maxValue }
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }
