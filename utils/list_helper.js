@@ -1,4 +1,6 @@
 const _ = require('lodash')
+const Blog = require('../models/blog')
+const log = require('./logger')
 
 const dummy = (blogs) => {
   return 1
@@ -54,10 +56,17 @@ const mostLikes = (blogs) => {
   return { author: maxProperty, likes: maxValue }
 }
 
+const blogsInDb = async () => {
+  const count = await Blog.countDocuments({})
+  log.info('Blog count', count)
+  return count
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
   mostLikes,
+  blogsInDb,
 }
