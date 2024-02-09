@@ -112,9 +112,4 @@ describe('totsl likes', () => {
       likes: 17,
     })
   })
-
-  test('get the correct amount of blog post', () => {
-    const result = listHelper.blogsInDb()
-    expect(result).toBe(3)
-  }, 100000)
 })

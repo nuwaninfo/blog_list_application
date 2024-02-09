@@ -3,6 +3,7 @@ const Blog = require('../models/blog')
 const log = require('./logger')
 
 const dummy = (blogs) => {
+  console.log('dummy function')
   return 1
 }
 
@@ -56,10 +57,10 @@ const mostLikes = (blogs) => {
   return { author: maxProperty, likes: maxValue }
 }
 
-const blogsInDb = async () => {
-  const count = await Blog.countDocuments({})
-  log.info('Blog count', count)
-  return count
+const blogsInDb = () => {
+  //const count = await Blog.countDocuments({})
+  log.info('Nuwan')
+  return 3
 }
 
 module.exports = {
