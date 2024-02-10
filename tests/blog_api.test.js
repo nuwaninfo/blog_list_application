@@ -49,6 +49,21 @@ test('creates a new blog post', async () => {
   )
 })
 
+test('verifies that if the likes property is missing from the request', async () => {
+  const newBlog = {
+    title: '5 Common Server Vulnerabilities with Node.js',
+    author: 'DiJavaScript Todaypal Bhavsar',
+    url: 'https://blog.javascripttoday.com/blog/node-js-server-vulnerabilities/',
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(201)
+
+  const response = await api.get('/api/blogs')
+  const lastBlog = response.body[response.body.length - 1]
+
+  expect(lastBlog.likes).toBe(0)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
