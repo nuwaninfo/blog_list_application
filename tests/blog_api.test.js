@@ -23,6 +23,32 @@ test('check whether unique identifier property of the blog posts is id', async (
   expect(response.body[0].id).toBeDefined()
 })
 
+test('creates a new blog post', async () => {
+  const initialBlogs = await api.get('/api/blogs')
+
+  const newBlog = {
+    title: 'Node js 21: Pioneering the Future of Development',
+    author: 'Dipal Bhavsar',
+    url: 'https://www.bacancytechnology.com/blog/whats-new-in-node-js-21',
+    likes: 20,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const blogTitles = response.body.map((r) => r.title)
+
+  expect(response.body).toHaveLength(initialBlogs.body.length + 1)
+  expect(blogTitles).toContain(
+    'Node js 21: Pioneering the Future of Development'
+  )
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
