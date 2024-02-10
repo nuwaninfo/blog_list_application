@@ -64,6 +64,15 @@ test('verifies that if the likes property is missing from the request', async ()
   expect(lastBlog.likes).toBe(0)
 })
 
+test('verify that if the title or url properties are missing from the request data', async () => {
+  const newBlog = {
+    author: 'DiJavaScript Todaypal Bhavsar',
+    likes: 12,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+}, 100000)
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
