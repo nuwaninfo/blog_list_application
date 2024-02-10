@@ -90,6 +90,21 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('updation of a blog', () => {
+  test('succeeds with equal the sending likes', async () => {
+    const updatedLikes = { likes: 30 }
+
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToUpdate = blogsAtStart.body[0]
+
+    const updatedBlog = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedLikes)
+
+    expect(updatedBlog.body.likes).toBe(30)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
