@@ -32,9 +32,9 @@ const blog = new Blog({
   likes: 20,
 })
 
-/*blog.save().then((result) => {
+blog.save().then((result) => {
   console.log('blog saved!')
-})*/
+})
 
 console.log('blog')
 Blog.find({}).then((result) => {
