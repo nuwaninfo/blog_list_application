@@ -1,7 +1,7 @@
+const middleware = require('../utils/middleware')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {
@@ -9,6 +9,7 @@ blogsRouter.get('/', async (request, response) => {
     name: 1,
     id: 1,
   })
+
   const formattedBlogs = blogs.map((blog) => {
     return {
       url: blog.url,
@@ -21,23 +22,23 @@ blogsRouter.get('/', async (request, response) => {
       id: blog._id,
     }
   })
-  response.json(formattedBlogs)
+  response.status(200).json(formattedBlogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const body = request.body
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  const userId = request.user.id
 
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
+  if (!userId) {
+    return response.status(401).json({ error: 'Unauthorized' })
   }
-  const user = await User.findById(decodedToken.id)
+  const user = await User.findById(userId)
 
   if (body.title === undefined || body.url === undefined) {
     response
       .status(400)
-      .json({ error: 'Bad Request', message: 'Missing required property' })
+      .json({ error: 'Bad Request 1', message: 'Missing required property' })
   } else {
     const blog = new Blog({
       title: body.title,
@@ -56,31 +57,35 @@ blogsRouter.post('/', async (request, response) => {
   }
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
-  try {
-    // Get the user id from the token
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-
-    // Get the uer id from the blog
-    const blog = await Blog.findById(request.params.id)
-
-    if (decodedToken.id === blog.user.toString()) {
-      const result = Blog.findByIdAndDelete(request.params.id)
-      if (!result) {
-        return response.status(404).json({ error: 'User not found' })
+blogsRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      // Get the user id from the token
+      const userId = request.user.id
+      if (!userId) {
+        return response.status(401).json({ error: 'token invalid' })
       }
 
-      response.status(204).end()
-    } else {
-      response.status(401).json({ error: 'Unauthorized access' })
+      // Get the uer id from the blog
+      const blog = await Blog.findById(request.params.id)
+
+      if (userId === blog.user.toString()) {
+        const result = Blog.findByIdAndDelete(request.params.id)
+        if (!result) {
+          return response.status(404).json({ error: 'User not found' })
+        }
+
+        response.status(204).end()
+      } else {
+        response.status(401).json({ error: 'Unauthorized access' })
+      }
+    } catch (exception) {
+      next(exception)
     }
-  } catch (exception) {
-    next(exception)
   }
-})
+)
 
 blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body

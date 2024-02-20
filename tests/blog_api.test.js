@@ -11,10 +11,10 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test('there are two blogs', async () => {
+test('there are four blogs', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(2)
+  expect(response.body).toHaveLength(4)
 })
 
 test('check whether unique identifier property of the blog posts is id', async () => {
@@ -35,6 +35,10 @@ test('creates a new blog post', async () => {
 
   await api
     .post('/api/blogs')
+    .set(
+      'Authorization',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im51d2FuZiIsImlkIjoiNjVkNDc5MmFjZTkxNjQyYWI0ZDllZGRjIiwiaWF0IjoxNzA4NDI0Mzk4fQ.PVflqEKmgZfLnhDtOcmrau-52q3Q1cw5JGEX1oAp3z4'
+    )
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -56,7 +60,14 @@ test('verifies that if the likes property is missing from the request', async ()
     url: 'https://blog.javascripttoday.com/blog/node-js-server-vulnerabilities/',
   }
 
-  await api.post('/api/blogs').send(newBlog).expect(201)
+  await api
+    .post('/api/blogs')
+    .set(
+      'Authorization',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im51d2FuZiIsImlkIjoiNjVkNDc5MmFjZTkxNjQyYWI0ZDllZGRjIiwiaWF0IjoxNzA4NDI0Mzk4fQ.PVflqEKmgZfLnhDtOcmrau-52q3Q1cw5JGEX1oAp3z4'
+    )
+    .send(newBlog)
+    .expect(201)
 
   const response = await api.get('/api/blogs')
   const lastBlog = response.body[response.body.length - 1]
@@ -70,15 +81,41 @@ test('verify that if the title or url properties are missing from the request da
     likes: 12,
   }
 
-  await api.post('/api/blogs').send(newBlog).expect(400)
+  await api
+    .post('/api/blogs')
+    .set(
+      'Authorization',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im51d2FuZiIsImlkIjoiNjVkNDc5MmFjZTkxNjQyYWI0ZDllZGRjIiwiaWF0IjoxNzA4NDI0Mzk4fQ.PVflqEKmgZfLnhDtOcmrau-52q3Q1cw5JGEX1oAp3z4'
+    )
+    .send(newBlog)
+    .expect(400)
+})
+
+test('creates a new blog post without token', async () => {
+  const initialBlogs = await api.get('/api/blogs')
+
+  const newBlog = {
+    title: 'Node js 21: Pioneering the Future of Development',
+    author: 'Dipal Bhavsar',
+    url: 'https://www.bacancytechnology.com/blog/whats-new-in-node-js-21',
+    likes: 20,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(401)
 })
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await api.get('/api/blogs')
-    const blogToDelete = blogsAtStart.body[0]
+    const blogToDelete = blogsAtStart.body[7]
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set(
+        'Authorization',
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im51d2FuZiIsImlkIjoiNjVkNDc5MmFjZTkxNjQyYWI0ZDllZGRjIiwiaWF0IjoxNzA4NDI0Mzk4fQ.PVflqEKmgZfLnhDtOcmrau-52q3Q1cw5JGEX1oAp3z4'
+      )
+      .expect(204)
 
     const blogsAtEnd = await api.get('/api/blogs')
 
