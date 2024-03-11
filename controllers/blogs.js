@@ -91,23 +91,27 @@ blogsRouter.put(
   '/:id',
   middleware.userExtractor,
   async (request, response, next) => {
-    const body = request.body
-    const blogId = request.params.id
-    const userId = request.user.id
+    try {
+      const body = request.body
+      const blogId = request.params.id
+      const userId = request.user.id
 
-    const blog = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes,
-      user: userId,
+      const blog = {
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes,
+        user: userId,
+      }
+
+      const updatedBlog = await Blog.findByIdAndUpdate(blogId, blog, {
+        new: true,
+      })
+
+      response.json(updatedBlog)
+    } catch (error) {
+      next(error)
     }
-
-    const updatedBlog = await Blog.findByIdAndUpdate(blogId, blog, {
-      new: true,
-    })
-
-    response.json(updatedBlog)
   }
 )
 
